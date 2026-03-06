@@ -1,42 +1,58 @@
-import os
+#!/usr/bin/env python3
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
+import os
 
-os.makedirs("data", exist_ok=True)
+archivo = 'data/clima.csv'
 
-df = pd.read_csv("data/clima.csv")
+if not os.path.exists(archivo):
+    print(f"❌ No existe {archivo}")
+    exit()
 
-# 1) Temperatura
-plt.figure(figsize=(10,5))
-plt.bar(df["ciudad"], df["temperatura"])
-plt.title("Temperatura actual por ciudad (°C)")
-plt.ylabel("°C")
-plt.xticks(rotation=30)
+df = pd.read_csv(archivo)
+
+fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+fig.suptitle('Análisis de Clima por Ciudades', fontsize=16, fontweight='bold')
+
+# Gráfica 1: Temperaturas
+ax1 = axes[0, 0]
+ax1.bar(df['ciudad'], df['temperatura'])
+ax1.set_title('Temperatura Actual (°C)')
+ax1.set_ylabel('Temperatura (°C)')
+ax1.tick_params(axis='x', rotation=45)
+ax1.grid(axis='y', alpha=0.3)
+
+# Gráfica 2: Humedad
+ax2 = axes[0, 1]
+ax2.bar(df['ciudad'], df['humedad'])
+ax2.set_title('Humedad Relativa (%)')
+ax2.set_ylabel('Humedad (%)')
+ax2.tick_params(axis='x', rotation=45)
+ax2.grid(axis='y', alpha=0.3)
+
+# Gráfica 3: Velocidad del Viento
+ax3 = axes[1, 0]
+ax3.scatter(df['ciudad'], df['velocidad_viento'], s=200)
+ax3.set_title('Velocidad del Viento (km/h)')
+ax3.set_ylabel('Velocidad (km/h)')
+ax3.tick_params(axis='x', rotation=45)
+ax3.grid(alpha=0.3)
+
+# Gráfica 4: Sensación térmica vs temperatura
+ax4 = axes[1, 1]
+x = np.arange(len(df))
+width = 0.35
+ax4.bar(x - width/2, df['temperatura'], width, label='Temperatura')
+ax4.bar(x + width/2, df['sensacion_termica'], width, label='Sensación térmica')
+ax4.set_title('Temperatura vs Sensación Térmica')
+ax4.set_ylabel('Temperatura (°C)')
+ax4.set_xticks(x)
+ax4.set_xticklabels(df['ciudad'], rotation=45)
+ax4.legend()
+ax4.grid(axis='y', alpha=0.3)
+
 plt.tight_layout()
-plt.savefig("data/temperatura.png", dpi=200)
-plt.close()
-
-# 2) Humedad
-plt.figure(figsize=(10,5))
-plt.bar(df["ciudad"], df["humedad"])
-plt.title("Humedad por ciudad (%)")
-plt.ylabel("%")
-plt.xticks(rotation=30)
-plt.tight_layout()
-plt.savefig("data/humedad.png", dpi=200)
-plt.close()
-
-# 3) Velocidad del viento
-plt.figure(figsize=(10,5))
-plt.bar(df["ciudad"], df["velocidad_viento"])
-plt.title("Velocidad del viento por ciudad (km/h)")
-plt.ylabel("km/h")
-plt.xticks(rotation=30)
-plt.tight_layout()
-plt.savefig("data/viento.png", dpi=200)
-plt.close()
-
-print("✅ Gráficas generadas en la carpeta data/:")
-print("- data/temperatura.png")
-print("- data/humedad.png")
-print("- data/viento.png")
+plt.savefig('data/clima_analysis.png', dpi=300, bbox_inches='tight')
+print("✅ Gráfica guardada en data/clima_analysis.png")
+plt.show()
