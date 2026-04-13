@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-archivo = 'data/clima.csv'
+archivo = 'data/clima_transformado.csv'
 
 if not os.path.exists(archivo):
     print(f"❌ No existe {archivo}")
