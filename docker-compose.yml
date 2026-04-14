@@ -1,0 +1,42 @@
+services:
+  app:
+    build: .
+    container_name: clima_app
+    ports:
+      - "8501:8501"
+    environment:
+      DATABASE_URL: postgresql+psycopg2://clima_user:Admin123@postgres:5432/clima_db
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: clima_user
+      POSTGRES_PASSWORD: Admin123
+      POSTGRES_DB: clima_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile.jupyter
+    container_name: clima_jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/jovyan/work/notebooks
+      - ./data:/home/jovyan/work/data
+      - ./:/home/jovyan/work/project
+    environment:
+      DATABASE_URL: postgresql+psycopg2://clima_user:Admin123@postgres:5432/clima_db
+    depends_on:
+      - postgres
+    command: start-notebook.py --NotebookApp.token=''
+
+volumes:
+  postgres_data:
